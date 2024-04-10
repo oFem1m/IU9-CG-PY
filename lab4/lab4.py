@@ -21,26 +21,26 @@ def bresenham(x1, y1, x2, y2):
     sx = sign(x1, x2)
     sy = sign(y1, y2)
     if dx > dy:
-        err = dx // 2
+        err = dx / 2
         while x != x2:
             if 0 <= x < size and 0 <= y < size:
                 position = (x + y * size) * 3
-                pixels[position] = 255
-                pixels[position + 1] = 255
-                pixels[position + 2] = 255
+                pixels[position] = int(255 * (1 - err / dx))
+                pixels[position + 1] = int(255 * (1 - err / dx))
+                pixels[position + 2] = int(255 * (1 - err / dx))
             err -= dy
             if err < 0:
                 y += sy
                 err += dx
             x += sx
     else:
-        err = dy // 2
+        err = dy / 2
         while y != y2:
             if 0 <= x < size and 0 <= y < size:
                 position = (x + y * size) * 3
-                pixels[position] = 255
-                pixels[position + 1] = 255
-                pixels[position + 2] = 255
+                pixels[position] = int(255 * (1 - err / dy))
+                pixels[position + 1] = int(255 * (1 - err / dy))
+                pixels[position + 2] = int(255 * (1 - err / dy))
             err -= dx
             if err < 0:
                 x += sx
