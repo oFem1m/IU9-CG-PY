@@ -108,6 +108,7 @@ def display(window):
 def key_callback(window, key, scancode, action, mods):
     global alpha
     global beta
+    global fill
     if action == glfw.PRESS or action == glfw.REPEAT:
         if key == glfw.KEY_RIGHT:
             beta += 0.1
@@ -118,12 +119,14 @@ def key_callback(window, key, scancode, action, mods):
         elif key == glfw.KEY_DOWN:
             alpha -= 0.1
         elif key == glfw.KEY_F:
-            global fill
             fill = not fill
             if fill:
-                glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+                glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
             else:
-                glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+                glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
+        elif key == glfw.KEY_W:
+            glFrontFace(GL_CW if glGetBoolean(GL_CULL_FACE) else GL_CCW)
+            glEnable(GL_CULL_FACE)
 
 
 if __name__ == "__main__":
