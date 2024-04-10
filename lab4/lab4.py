@@ -18,8 +18,8 @@ def bresenham(x1, y1, x2, y2):
     dx = abs(x2 - x1)
     dy = abs(y2 - y1)
     x, y = x1, y1
-    sx = 1 if x1 < x2 else -1
-    sy = 1 if y1 < y2 else -1
+    sx = sign(x1, x2)
+    sy = sign(y1, y2)
     if dx > dy:
         err = dx // 2
         while x != x2:
@@ -103,43 +103,6 @@ def fill(x, y):
             q.append((x, y - 1))
 
 
-def apply_post_filter(N):
-    global pixels, size
-    filtered_pixels = pixels.copy()
-
-    radius = N // 2
-    weights = [[1, 2, 1],
-               [2, 4, 2],
-               [1, 2, 1]]
-
-    for y in range(size):
-        for x in range(size):
-            sum_r = sum_g = sum_b = 0
-            weight_sum = 0
-
-            for dy in range(-radius, radius + 1):
-                for dx in range(-radius, radius + 1):
-                    nx, ny = x + dx, y + dy
-                    if 0 <= nx < size and 0 <= ny < size:
-                        index = (ny * size + nx) * 3
-                        weight = weights[dy + radius][dx + radius]
-                        sum_r += pixels[index] * weight
-                        sum_g += pixels[index + 1] * weight
-                        sum_b += pixels[index + 2] * weight
-                        weight_sum += weight
-
-            avg_r = int(sum_r / weight_sum)
-            avg_g = int(sum_g / weight_sum)
-            avg_b = int(sum_b / weight_sum)
-
-            index = (y * size + x) * 3
-            filtered_pixels[index] = avg_r
-            filtered_pixels[index + 1] = avg_g
-            filtered_pixels[index + 2] = avg_b
-
-    pixels = filtered_pixels
-
-
 def key_callback(window, key, scancode, action, mods):
     global pixels, points, edges
     if action == glfw.PRESS:
@@ -154,7 +117,6 @@ def key_callback(window, key, scancode, action, mods):
                 y = (min_y + max_y) // 2
                 if x and y:
                     fill(x, y)
-                apply_post_filter(N=3)
         elif key == glfw.KEY_BACKSPACE:
             pixels = [255 for _ in range(size * size * 3)]
             points.clear()
@@ -162,10 +124,8 @@ def key_callback(window, key, scancode, action, mods):
 
 
 def display(window):
-    # glClear(GL_COLOR_BUFFER_BIT)
     glDrawPixels(size, size, GL_RGB, GL_UNSIGNED_BYTE, pixels)
 
-    # glColor3f(1, 1, 1)
     glBegin(GL_LINES)
     for edge in edges:
         for p in edge:
@@ -187,8 +147,6 @@ def main():
     glfw.make_context_current(window)
     glfw.set_key_callback(window, key_callback)
     glfw.set_mouse_button_callback(window, mouse_button_callback)
-
-    # glClearColor(1.0, 1.0, 1.0, 1.0)
 
     while not glfw.window_should_close(window):
         display(window)
