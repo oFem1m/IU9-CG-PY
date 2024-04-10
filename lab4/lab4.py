@@ -14,14 +14,14 @@ def sign(a, b):
     return 1
 
 
-def bresenhamfloat(x1, y1, x2, y2):
+def bresenham(x1, y1, x2, y2):
     dx = abs(x2 - x1)
     dy = abs(y2 - y1)
     x, y = x1, y1
-    sx = sign(x1, x2)
-    sy = sign(y1, y2)
+    sx = 1 if x1 < x2 else -1
+    sy = 1 if y1 < y2 else -1
     if dx > dy:
-        err = dx / 2.0
+        err = dx // 2
         while x != x2:
             if 0 <= x < size and 0 <= y < size:
                 position = (x + y * size) * 3
@@ -34,7 +34,7 @@ def bresenhamfloat(x1, y1, x2, y2):
                 err += dx
             x += sx
     else:
-        err = dy / 2.0
+        err = dy // 2
         while y != y2:
             if 0 <= x < size and 0 <= y < size:
                 position = (x + y * size) * 3
@@ -69,10 +69,10 @@ def redraw_polygon():
     edges = create_edge_list()
 
     for i in range(1, len(points)):
-        bresenhamfloat(points[i - 1][0], points[i - 1][1], points[i][0], points[i][1])
+        bresenham(points[i - 1][0], points[i - 1][1], points[i][0], points[i][1])
 
     if len(points) > 2:
-        bresenhamfloat(points[-1][0], points[-1][1], points[0][0], points[0][1])
+        bresenham(points[-1][0], points[-1][1], points[0][0], points[0][1])
 
 
 def create_edge_list():
@@ -145,7 +145,7 @@ def key_callback(window, key, scancode, action, mods):
     if action == glfw.PRESS:
         if key == glfw.KEY_ENTER:
             if len(points) > 2:
-                bresenhamfloat(points[-1][0], points[-1][1], points[0][0], points[0][1])
+                bresenham(points[-1][0], points[-1][1], points[0][0], points[0][1])
                 min_x = min(points, key=lambda x: x[0])[0]
                 max_x = max(points, key=lambda x: x[0])[0]
                 min_y = min(points, key=lambda x: x[1])[1]
