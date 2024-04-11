@@ -25,6 +25,7 @@ def bresenham(x1, y1, x2, y2):
         while x != x2:
             if 0 <= x < size and 0 <= y < size:
                 position = (x + y * size) * 3
+                # красим с учетом интенсивности
                 pixels[position] = int(255 * (1 - err / dx))
                 pixels[position + 1] = int(255 * (1 - err / dx))
                 pixels[position + 2] = int(255 * (1 - err / dx))
@@ -38,6 +39,7 @@ def bresenham(x1, y1, x2, y2):
         while y != y2:
             if 0 <= x < size and 0 <= y < size:
                 position = (x + y * size) * 3
+                # и тут тоже
                 pixels[position] = int(255 * (1 - err / dy))
                 pixels[position + 1] = int(255 * (1 - err / dy))
                 pixels[position + 2] = int(255 * (1 - err / dy))
