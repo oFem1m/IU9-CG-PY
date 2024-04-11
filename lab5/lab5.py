@@ -6,6 +6,7 @@ size = 400
 pixels = [0] * (size * size * 3)
 points = []
 edges = []
+clipped_edges = []
 
 
 def sign(a, b):
@@ -25,7 +26,6 @@ def bresenham(x1, y1, x2, y2, color):
         while x != x2:
             if 0 <= x < size and 0 <= y < size:
                 position = (x + y * size) * 3
-                # красим с учетом интенсивности
                 pixels[position] = color[0]
                 pixels[position + 1] = color[1]
                 pixels[position + 2] = color[2]
@@ -39,7 +39,6 @@ def bresenham(x1, y1, x2, y2, color):
         while y != y2:
             if 0 <= x < size and 0 <= y < size:
                 position = (x + y * size) * 3
-                # и тут тоже
                 pixels[position] = color[0]
                 pixels[position + 1] = color[1]
                 pixels[position + 2] = color[2]
@@ -104,57 +103,79 @@ def fill(x, y):
             q.append((x, y + 1))
             q.append((x, y - 1))
 
-def clip_line(coordinate_min, coordinate_max, P1, P2):
-    dx = P2[0] - P1[0]
-    dy = P2[1] - P1[1]
 
-    # параметры t для пересечения с границами отсекателя
-    t_enter = 0.0
-    t_exit = 1.0
+def clip_line(xmin, xmax, ymin, ymax, x1, y1, x2, y2):
+    # Функция для определения кода точки
+    def compute_code(x, y):
+        code = 0
+        if x < xmin:
+            code |= 1
+        elif x > xmax:
+            code |= 2
+        if y < ymin:
+            code |= 4
+        elif y > ymax:
+            code |= 8
+        return code
 
-    # проверка пересечения с каждой границей отсекателя
-    for edge in range(4):
-        if edge == 0:  # левая граница
-            normal = (-1, 0)
-            constant = -coordinate_min[0]
-        elif edge == 1:  # нижняя граница
-            normal = (0, -1)
-            constant = -coordinate_min[1]
-        elif edge == 2:  # правая граница
-            normal = (1, 0)
-            constant = coordinate_max[0]
-        elif edge == 3:  # верхняя граница
-            normal = (0, 1)
-            constant = coordinate_max[1]
+    # Инициализация кодов концов отрезка
+    code1 = compute_code(x1, y1)
+    code2 = compute_code(x2, y2)
 
-        numerator = normal[0] * (P1[0] - coordinate_min[0]) + normal[1] * (P1[1] - coordinate_min[1])
-        denominator = normal[0] * dx + normal[1] * dy
+    while True:
+        # Проверяем, является ли отрезок тривиально видимым
+        if not (code1 | code2):
+            return int(x1), int(y1), int(x2), int(y2)  # Отрезок целиком видим
 
-        # отрезок параллелен текущей границе
-        if denominator == 0:
-            if numerator < 0:
-                return None  # отрезок полностью виден
+        # Проверяем, является ли отрезок тривиально невидимым
+        elif code1 & code2:
+            return None  # Отрезок тривиально невидим
+
         else:
-            t = -numerator / denominator
+            # Выбираем точку с ненулевым кодом
+            if code1:
+                code = code1
+            else:
+                code = code2
 
-            if denominator > 0:  # пересечение с входной границей
-                if t > t_exit:
-                    return None
-                if t > t_enter:
-                    t_enter = t
-            else:  # пересечение с выходной границей
-                if t < t_enter:
-                    return None
-                if t < t_exit:
-                    t_exit = t
+            # Находим точку пересечения с границей окна
+            if code & 1:  # Левая граница
+                x = xmin
+                y = y1 + (y2 - y1) * (xmin - x1) / (x2 - x1)
+            elif code & 2:  # Правая граница
+                x = xmax
+                y = y1 + (y2 - y1) * (xmax - x1) / (x2 - x1)
+            elif code & 4:  # Нижняя граница
+                y = ymin
+                x = x1 + (x2 - x1) * (ymin - y1) / (y2 - y1)
+            elif code & 8:  # Верхняя граница
+                y = ymax
+                x = x1 + (x2 - x1) * (ymax - y1) / (y2 - y1)
 
-    # отрезок полностью внутри отсекателя
-    if t_exit > 0:
-        return P2
+            # Обновляем координаты точки
+            if code == code1:
+                x1, y1 = x, y
+                code1 = compute_code(x1, y1)
+            else:
+                x2, y2 = x, y
+                code2 = compute_code(x2, y2)
 
-    # нахождение координаты точки пересечения с границей
-    clipped_point = (P1[0] + t_enter * dx, P1[1] + t_enter * dy)
-    return clipped_point
+
+
+def clip_edges():
+    global edges, clipped_edges
+    clipped_edges.clear()
+    min_x_rect = 150
+    max_x_rect = 250
+    min_y_rect = 150
+    max_y_rect = 250
+    for edge in edges:
+        p1, p2 = edge
+        clipped_p1 = clip_line((min_x_rect, min_y_rect), (max_x_rect, max_y_rect), p1, p2)
+        clipped_p2 = clip_line((min_x_rect, min_y_rect), (max_x_rect, max_y_rect), p2, p1)
+        print(clipped_p1, clipped_p2)
+        if clipped_p1 and clipped_p2:
+            clipped_edges.append((clipped_p1, clipped_p2))
 
 
 def key_callback(window, key, scancode, action, mods):
@@ -163,21 +184,20 @@ def key_callback(window, key, scancode, action, mods):
         if key == glfw.KEY_F:
             if len(points) > 2:
                 bresenham(points[-1][0], points[-1][1], points[0][0], points[0][1], color=(255, 255, 255))
-                min_x = min(points, key=lambda x: x[0])[0]
-                max_x = max(points, key=lambda x: x[0])[0]
-                min_y = min(points, key=lambda x: x[1])[1]
-                max_y = max(points, key=lambda x: x[1])[1]
-                x = (min_x + max_x) // 2
-                y = (min_y + max_y) // 2
-                if x and y:
-                    fill(x, y)
-
-        # elif key == glfw.KEY_ENTER:
-        #     if len(points) > 2:
-        #         # Вызов алгоритма отсечения средней точкой
-        #         clipped_points = midpoint_line_clipping(points)
-        #         points = clipped_points
-        #         redraw_polygon()
+            min_x = min(points, key=lambda x: x[0])[0]
+            max_x = max(points, key=lambda x: x[0])[0]
+            min_y = min(points, key=lambda x: x[1])[1]
+            max_y = max(points, key=lambda x: x[1])[1]
+            x = (min_x + max_x) // 2
+            y = (min_y + max_y) // 2
+            if x and y:
+                fill(x, y)
+        elif key == glfw.KEY_ENTER:
+            print(len(points))
+            if len(points) > 2:
+                # Вызов функции для обработки пересечений и отсечения ребер
+                clip_edges()
+                redraw_clipped_polygon()
 
         elif key == glfw.KEY_BACKSPACE:
             pixels = [0 for _ in range(size * size * 3)]
@@ -185,8 +205,21 @@ def key_callback(window, key, scancode, action, mods):
             edges.clear()
 
 
+def redraw_clipped_polygon():
+    global pixels, points, edges, clipped_edges, size
+    pixels = [0] * (size * size * 3)
+    for i in range(1, len(points)):
+        bresenham(points[i - 1][0], points[i - 1][1], points[i][0], points[i][1], color=(255, 255, 255))
+        if len(points) > 2:
+            bresenham(points[-1][0], points[-1][1], points[0][0], points[0][1], color=(255, 255, 255))
+
+        for edge in clipped_edges:
+            print(edge)
+            p1, p2 = edge
+            bresenham(int(p1[0]), int(p1[1]), int(p2[0]), int(p2[1]), color=(0, 255, 0))
+
+
 def display(window):
-    # Рисование прямоугольной области D
     min_x_rect = 150
     max_x_rect = 250
     min_y_rect = 150
@@ -195,7 +228,6 @@ def display(window):
     bresenham(min_x_rect, min_y_rect, min_x_rect, max_y_rect, color=(255, 0, 0))
     bresenham(min_x_rect, max_y_rect, max_x_rect, max_y_rect, color=(255, 0, 0))
     bresenham(max_x_rect, min_y_rect, max_x_rect, max_y_rect, color=(255, 0, 0))
-
     glDrawPixels(size, size, GL_RGB, GL_UNSIGNED_BYTE, pixels)
     glBegin(GL_LINES)
     for edge in edges:
@@ -205,7 +237,6 @@ def display(window):
 
     glfw.swap_buffers(window)
     glfw.poll_events()
-
 
 def main():
     if not glfw.init():
