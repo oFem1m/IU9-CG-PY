@@ -120,7 +120,7 @@ def key_callback(window, key, scancode, action, mods):
                 if x and y:
                     fill(x, y)
         elif key == glfw.KEY_BACKSPACE:
-            pixels = [255 for _ in range(size * size * 3)]
+            pixels = [0 for _ in range(size * size * 3)]
             points.clear()
             edges.clear()
 
