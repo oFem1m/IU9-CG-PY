@@ -41,7 +41,7 @@ def display(window):
     t = -0.4
     p = 0.463648
 
-    def Proj():  # кабинетная проекция
+    def Proj():  # фронтальная диметрия
         glMultMatrixf([
             cos(p), 0, sin(p), 0,
             0, cos(p), -cos(p) * sin(t), 0,
