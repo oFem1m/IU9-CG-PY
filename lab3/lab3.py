@@ -67,6 +67,8 @@ def display(window):
                 theta_next = (2 * math.pi / N) * (i + 1)
                 phi_next = (2 * math.pi / n) * (j + 1)
 
+                # Рисуем "квадраты"
+
                 x0 = (R + r * cos(phi)) * cos(theta)
                 y0 = (R + r * cos(phi)) * sin(theta)
                 z0 = r * sin(phi)
@@ -109,13 +111,13 @@ def key_callback(window, key, scancode, action, mods):
     global beta
     if action == glfw.PRESS or action == glfw.REPEAT:
         if key == glfw.KEY_RIGHT:
-            alpha += 1.5
+            alpha += 3
         elif key == glfw.KEY_LEFT:
-            alpha -= 1.5
+            alpha -= 3
         elif key == glfw.KEY_UP:
-            beta -= 1.5
+            beta -= 3
         elif key == glfw.KEY_DOWN:
-            beta += 1.5
+            beta += 3
         elif key == glfw.KEY_F:
             global fill
             fill = not fill
