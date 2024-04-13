@@ -1,0 +1,359 @@
+\documentclass[a4paper, 14pt]{extarticle}
+
+% Поля
+%--------------------------------------
+\usepackage{geometry}
+\usepackage[T2A]{fontenc}
+\usepackage[russian]{babel}
+\usepackage{minted}
+\usepackage{float}
+\usepackage{graphicx} 
+\geometry{a4paper,tmargin=2cm,bmargin=2cm,lmargin=3cm,rmargin=1cm}
+%--------------------------------------
+
+
+%Russian-specific packages
+%--------------------------------------
+\usepackage[T2A]{fontenc}
+\usepackage[utf8]{inputenc} 
+\usepackage[english, main=russian]{babel}
+%--------------------------------------
+\usepackage{textcomp}
+
+% Красная строка
+%--------------------------------------
+\usepackage{indentfirst}               
+%--------------------------------------             
+
+
+%Graphics
+%--------------------------------------
+\usepackage{graphicx}
+\graphicspath{ {./images/} }
+\usepackage{wrapfig}
+%--------------------------------------
+
+% Полуторный интервал
+%--------------------------------------
+\linespread{1.3}                    
+%--------------------------------------
+
+%Выравнивание и переносы
+%--------------------------------------
+% Избавляемся от переполнений
+\sloppy
+% Запрещаем разрыв страницы после первой строки абзаца
+\clubpenalty=10000
+% Запрещаем разрыв страницы после последней строки абзаца
+\widowpenalty=10000
+%--------------------------------------
+
+%Списки
+\usepackage{enumitem}
+
+%Подписи
+\usepackage{caption} 
+
+%Гиперссылки
+\usepackage{hyperref}
+
+\hypersetup {
+	unicode=true
+}
+
+%Рисунки
+%--------------------------------------
+\DeclareCaptionLabelSeparator*{emdash}{~--- }
+\captionsetup[figure]{labelsep=emdash,font=onehalfspacing,position=bottom}
+%--------------------------------------
+
+\usepackage{tempora}
+\usepackage{amsmath}
+\usepackage{color}
+\usepackage{listings}
+\lstset{
+  belowcaptionskip=1\baselineskip,
+  breaklines=true,
+  frame=L,
+  xleftmargin=\parindent,
+  language=Python,
+  showstringspaces=false,
+  basicstyle=\footnotesize\ttfamily,
+  keywordstyle=\bfseries\color{blue},
+  commentstyle=\itshape\color{purple},
+  identifierstyle=\color{black},
+  stringstyle=\color{red},
+}
+
+%--------------------------------------
+%			НАЧАЛО ДОКУМЕНТА
+%--------------------------------------
+
+\begin{document}
+
+%--------------------------------------
+%			ТИТУЛЬНЫЙ ЛИСТ
+%--------------------------------------
+\begin{titlepage}
+\thispagestyle{empty}
+\newpage
+
+
+%Шапка титульного листа
+%--------------------------------------
+\vspace*{-60pt}
+\hspace{-65pt}
+\begin{minipage}{0.3\textwidth}
+\hspace*{-20pt}\centering
+\includegraphics[width=\textwidth]{emblem}
+\end{minipage}
+\begin{minipage}{0.67\textwidth}\small \textbf{
+\vspace*{-0.7ex}
+\hspace*{-6pt}\centerline{Министерство науки и высшего образования Российской Федерации}
+\vspace*{-0.7ex}
+\centerline{Федеральное государственное бюджетное образовательное учреждение }
+\vspace*{-0.7ex}
+\centerline{высшего образования}
+\vspace*{-0.7ex}
+\centerline{<<Московский государственный технический университет}
+\vspace*{-0.7ex}
+\centerline{имени Н.Э. Баумана}
+\vspace*{-0.7ex}
+\centerline{(национальный исследовательский университет)>>}
+\vspace*{-0.7ex}
+\centerline{(МГТУ им. Н.Э. Баумана)}}
+\end{minipage}
+%--------------------------------------
+
+%Полосы
+%--------------------------------------
+\vspace{-25pt}
+\hspace{-35pt}\rule{\textwidth}{2.3pt}
+
+\vspace*{-20.3pt}
+\hspace{-35pt}\rule{\textwidth}{0.4pt}
+%--------------------------------------
+
+\vspace{1.5ex}
+\hspace{-35pt} \noindent \small ФАКУЛЬТЕТ\hspace{80pt} <<Информатика и системы управления>>
+
+\vspace*{-16pt}
+\hspace{47pt}\rule{0.83\textwidth}{0.4pt}
+
+\vspace{0.5ex}
+\hspace{-35pt} \noindent \small КАФЕДРА\hspace{50pt} <<Теоретическая информатика и компьютерные технологии>>
+
+\vspace*{-16pt}
+\hspace{30pt}\rule{0.866\textwidth}{0.4pt}
+  
+\vspace{11em}
+
+\begin{center}
+\Large {\bf Лабораторная работа № 2} \\
+\large {\bf по курсу <<Компьютерная графика>>} \\
+\large <<Модельно-видовые и проективные пеобразования>>
+\end{center}\normalsize
+
+\vspace{8em}
+
+
+\begin{flushright}
+  {Студент группы ИУ9-42Б Волохов А. В.\hspace*{15pt} \\
+  \vspace{2ex}
+  Преподаватель Цалкович П. А.\hspace*{15pt}}
+\end{flushright}
+
+\bigskip
+
+\vfill
+
+
+\begin{center}
+\textsl{Москва 2024}
+\end{center}
+\end{titlepage}
+%--------------------------------------
+%		КОНЕЦ ТИТУЛЬНОГО ЛИСТА
+%--------------------------------------
+
+\renewcommand{\ttdefault}{pcr}
+
+\setlength{\tabcolsep}{3pt}
+\newpage
+\setcounter{page}{2}
+
+\section{Задача}\label{Sect::task}
+\par
+Необходимо:
+\newline
+1.Определить куб в качестве модели объекта сцены.
+\newline
+2.Определить преобразования, позволяющие получить заданный вид проекции (в
+соответствии с вариантом). Для демонстрации проекции добавить в сцену куб (в стандартной
+ориентации, не изменяемой при модельно-видовых преобразованиях основного объекта).
+\newline
+3.Реализовать изменение ориентации и размеров объекта (навигацию камеры) с помощью
+модельно-видовых преобразований (без gluLookAt). Управление производится интерактивно с
+помощью клавиатуры и/или мыши.
+\newline
+4.Предусмотреть возможность переключения между каркасным и твердотельным
+отображением модели (glFrontFace/ glPolygonMode).
+
+\section{Основная теория}
+\par
+В начале программы инициализируется библиотека GLFW для создания окна. Если инициализация прошла успешно, создается окно заданного размера. Затем устанавливается текущий контекст OpenGL для данного окна.
+\par
+Функция display() отвечает за отрисовку сцены. Вначале происходит очистка буферов цвета и глубины. Затем устанавливается матрица проекции и вызывается функция Proj(), которая реализует фронтальную диметрию. После этого вызывается функция cube(), которая отрисовывает куб с помощью примитивов OpenGL.
+\par
+Функция key callback() отвечает за обработку нажатий клавиш. При нажатии клавиш стрелок происходит изменение углов a и b, что влияет на положение куба в пространстве. Также при нажатии клавиши "F" происходит переключение между режимами отображения куба: сплошной заливкой или только границами.
+
+\pagebreak
+\section{Практическая реализация}
+Код представлен в Листинге 1.
+\par
+\begin{center}
+    Листинг 1 - lab2.py
+\end{center}
+
+\begin{lstlisting}
+import glfw
+from OpenGL.GL import *
+from math import cos, sin
+
+a = 0.0
+b = 0.0
+fill = True
+
+
+def main():
+    if not glfw.init():
+        return
+    window = glfw.create_window(700, 700, "CUBE", None, None)
+    if not window:
+        glfw.terminate()
+        return
+    glfw.make_context_current(window)
+    glfw.set_key_callback(window, key_callback)
+
+    glEnable(GL_DEPTH_TEST)
+    glDepthFunc(GL_LESS)
+
+    while not glfw.window_should_close(window):
+        display(window)
+    glfw.destroy_window(window)
+    glfw.terminate()
+
+
+def display(window):
+    glLoadIdentity()
+    glClear(GL_COLOR_BUFFER_BIT)
+    glClear(GL_DEPTH_BUFFER_BIT)
+    glMatrixMode(GL_PROJECTION)
+
+    # смещение
+    glMultMatrixf([1, 0, 0, 0,
+                   0, 1, 0, 0,
+                   0, 0, 1, 0,
+                   0.75, 0.75, 0, 1])
+
+    t = -0.4
+    p = 0.463648
+
+    def Proj():  # фронтальная диметрия
+        glMultMatrixf([
+            cos(p), 0, sin(p), 0,
+            0, cos(p), -cos(p) * sin(t), 0,
+                       sin(p) * cos(t), -sin(t), -cos(t) * cos(p), 0,
+            0, 0, 0, 1,
+        ])
+
+    Proj()
+
+    def cube(x):
+        x = x / 2
+        glBegin(GL_QUADS)
+        glColor3f(1.0, 0.0, 1.0)
+        glVertex3f(-x, -x, -x)
+        glVertex3f(-x, x, -x)
+        glVertex3f(-x, x, x)
+        glVertex3f(-x, -x, x)
+        glColor3f(1.0, 0.5, 0.5)
+        glVertex3f(x, -x, -x)
+        glVertex3f(x, -x, x)
+        glVertex3f(x, x, x)
+        glVertex3f(x, x, -x)
+        glColor3f(0.5, 1.0, 0.0)
+        glVertex3f(-x, -x, -x)
+        glVertex3f(-x, -x, x)
+        glVertex3f(x, -x, x)
+        glVertex3f(x, -x, -x)
+        glColor3f(1.0, 1.0, 0.0)
+        glVertex3f(-x, x, -x)
+        glVertex3f(-x, x, x)
+        glVertex3f(x, x, x)
+        glVertex3f(x, x, -x)
+        glColor3f(0.0, 1.0, 1.0)
+        glVertex3f(-x, -x, -x)
+        glVertex3f(x, -x, -x)
+        glVertex3f(x, x, -x)
+        glVertex3f(-x, x, -x)
+        glColor3f(1.0, 0.5, 0.0)
+        glVertex3f(-x, -x, x)
+        glVertex3f(x, -x, x)
+        glVertex3f(x, x, x)
+        glVertex3f(-x, x, x)
+        glEnd()
+
+    cube(0.25)
+
+    glLoadIdentity()
+
+    global a
+    global b
+    t = -0.4 + a
+    p = 0.463648 + b
+
+    Proj()
+
+    cube(0.8)
+
+    glfw.swap_buffers(window)
+    glfw.poll_events()
+
+
+def key_callback(window, key, scancode, action, mods):
+    global a
+    global b
+    if action == glfw.PRESS or action == glfw.REPEAT:
+        if key == glfw.KEY_RIGHT:
+            b += 0.05
+        elif key == glfw.KEY_LEFT:
+            b -= 0.05
+        elif key == glfw.KEY_UP:
+            a += 0.05
+        elif key == glfw.KEY_DOWN:
+            a -= 0.05
+        elif key == glfw.KEY_F:
+            global fill
+            fill = not fill
+            if fill:
+                glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
+            else:
+                glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
+
+
+if __name__ == "__main__":
+    main()
+
+\end{lstlisting}
+В результате работы программы получилcя следующий вывод:
+\begin{center}
+    \includegraphics[width=\linewidth]{res1.png}
+    \newpage
+    \includegraphics[width=\linewidth]{res2.png}
+\end{center}
+\pagebreak
+
+\section{Заключение}
+В ходе выполнения лабораторной работы был разработан простой пример трехмерной графики с использованием библиотеки OpenGL. Были реализованы основные элементы, такие как инициализация окна, отрисовка объектов и обработка клавиш для управления сценой. Полученные навыки могут быть полезны при дальнейшем изучении трехмерной графики и разработке графических приложений.
+\end{document}
