@@ -81,7 +81,7 @@ def create_edge_list():
     for i in range(len(points)):
         p1 = points[i]
         p2 = points[(i + 1) % len(points)]
-        edge_list.append((p1, p2))
+        edge_list.append([p1, p2])
     return edge_list
 
 
@@ -104,28 +104,32 @@ def fill(x, y):
             q.append((x, y - 1))
 
 
-def clip_line(xmin, xmax, ymin, ymax, x1, y1, x2, y2):
+def clip_line(xmin, xmax, ymin, ymax, point1, point2):
     # Функция для определения кода точки
-    def compute_code(x, y):
+    def compute_code(point):
         code = 0
-        if x < xmin:
+        if point[0] < xmin:
             code |= 1
-        elif x > xmax:
+        elif point[0] > xmax:
             code |= 2
-        if y < ymin:
+        if point[1] < ymin:
             code |= 4
-        elif y > ymax:
+        elif point[1] > ymax:
             code |= 8
         return code
 
+    # Создаем новые переменные для точек
+    new_point1 = list(point1)
+    new_point2 = list(point2)
+
     # Инициализация кодов концов отрезка
-    code1 = compute_code(x1, y1)
-    code2 = compute_code(x2, y2)
+    code1 = compute_code(new_point1)
+    code2 = compute_code(new_point2)
 
     while True:
         # Проверяем, является ли отрезок тривиально видимым
         if not (code1 | code2):
-            return int(x1), int(y1), int(x2), int(y2)  # Отрезок целиком видим
+            return [int(new_point1[0]), int(new_point1[1])], [int(new_point2[0]), int(new_point2[1])]  # Отрезок целиком видим
 
         # Проверяем, является ли отрезок тривиально невидимым
         elif code1 & code2:
@@ -141,26 +145,24 @@ def clip_line(xmin, xmax, ymin, ymax, x1, y1, x2, y2):
             # Находим точку пересечения с границей окна
             if code & 1:  # Левая граница
                 x = xmin
-                y = y1 + (y2 - y1) * (xmin - x1) / (x2 - x1)
+                y = new_point1[1] + (new_point2[1] - new_point1[1]) * (xmin - new_point1[0]) / (new_point2[0] - new_point1[0])
             elif code & 2:  # Правая граница
                 x = xmax
-                y = y1 + (y2 - y1) * (xmax - x1) / (x2 - x1)
+                y = new_point1[1] + (new_point2[1] - new_point1[1]) * (xmax - new_point1[0]) / (new_point2[0] - new_point1[0])
             elif code & 4:  # Нижняя граница
                 y = ymin
-                x = x1 + (x2 - x1) * (ymin - y1) / (y2 - y1)
+                x = new_point1[0] + (new_point2[0] - new_point1[0]) * (ymin - new_point1[1]) / (new_point2[1] - new_point1[1])
             elif code & 8:  # Верхняя граница
                 y = ymax
-                x = x1 + (x2 - x1) * (ymax - y1) / (y2 - y1)
+                x = new_point1[0] + (new_point2[0] - new_point1[0]) * (ymax - new_point1[1]) / (new_point2[1] - new_point1[1])
 
             # Обновляем координаты точки
             if code == code1:
-                x1, y1 = x, y
-                code1 = compute_code(x1, y1)
+                new_point1[0], new_point1[1] = int(x), int(y)
+                code1 = compute_code(new_point1)
             else:
-                x2, y2 = x, y
-                code2 = compute_code(x2, y2)
-
-
+                new_point2[0], new_point2[1] = int(x), int(y)
+                code2 = compute_code(new_point2)
 
 def clip_edges():
     global edges, clipped_edges
@@ -171,11 +173,15 @@ def clip_edges():
     max_y_rect = 250
     for edge in edges:
         p1, p2 = edge
-        clipped_p1 = clip_line((min_x_rect, min_y_rect), (max_x_rect, max_y_rect), p1, p2)
-        clipped_p2 = clip_line((min_x_rect, min_y_rect), (max_x_rect, max_y_rect), p2, p1)
-        print(clipped_p1, clipped_p2)
-        if clipped_p1 and clipped_p2:
-            clipped_edges.append((clipped_p1, clipped_p2))
+        clipped = clip_line(min_x_rect, max_x_rect, min_y_rect, max_y_rect, p1, p2)
+        if clipped is None:
+            clipped_edges.append(edge)
+        elif p1 != clipped[0] and p1 != clipped[1] and p2 != clipped[0] and p2 != clipped[1]:
+            clipped_edges.append([p1, clipped[0]])
+            clipped_edges.append([clipped[1], p2])
+        elif p1 == clipped[0]:
+            clipped_edges.append([clipped[1], p2])
+
 
 
 def key_callback(window, key, scancode, action, mods):
@@ -193,7 +199,6 @@ def key_callback(window, key, scancode, action, mods):
             if x and y:
                 fill(x, y)
         elif key == glfw.KEY_ENTER:
-            print(len(points))
             if len(points) > 2:
                 # Вызов функции для обработки пересечений и отсечения ребер
                 clip_edges()
@@ -208,14 +213,14 @@ def key_callback(window, key, scancode, action, mods):
 def redraw_clipped_polygon():
     global pixels, points, edges, clipped_edges, size
     pixels = [0] * (size * size * 3)
-    for i in range(1, len(points)):
-        bresenham(points[i - 1][0], points[i - 1][1], points[i][0], points[i][1], color=(255, 255, 255))
-        if len(points) > 2:
-            bresenham(points[-1][0], points[-1][1], points[0][0], points[0][1], color=(255, 255, 255))
-
-        for edge in clipped_edges:
-            print(edge)
-            p1, p2 = edge
+    # for i in range(1, len(points)):
+    #     bresenham(points[i - 1][0], points[i - 1][1], points[i][0], points[i][1], color=(255, 255, 255))
+    #     if len(points) > 2:
+    #         bresenham(points[-1][0], points[-1][1], points[0][0], points[0][1], color=(255, 255, 255))
+    print(clipped_edges)
+    for edge in clipped_edges:
+        p1, p2 = edge
+        if p1[0] != p2[0] and p1[1] != p2[1]:
             bresenham(int(p1[0]), int(p1[1]), int(p2[0]), int(p2[1]), color=(0, 255, 0))
 
 
@@ -224,10 +229,10 @@ def display(window):
     max_x_rect = 250
     min_y_rect = 150
     max_y_rect = 250
-    bresenham(min_x_rect, min_y_rect, max_x_rect, min_y_rect, color=(255, 0, 0))
-    bresenham(min_x_rect, min_y_rect, min_x_rect, max_y_rect, color=(255, 0, 0))
-    bresenham(min_x_rect, max_y_rect, max_x_rect, max_y_rect, color=(255, 0, 0))
-    bresenham(max_x_rect, min_y_rect, max_x_rect, max_y_rect, color=(255, 0, 0))
+    bresenham(min_x_rect, min_y_rect, max_x_rect, min_y_rect, color=(0, 255, 0))
+    bresenham(min_x_rect, min_y_rect, min_x_rect, max_y_rect, color=(0, 255, 0))
+    bresenham(min_x_rect, max_y_rect, max_x_rect, max_y_rect, color=(0, 255, 0))
+    bresenham(max_x_rect, min_y_rect, max_x_rect, max_y_rect, color=(0, 255, 0))
     glDrawPixels(size, size, GL_RGB, GL_UNSIGNED_BYTE, pixels)
     glBegin(GL_LINES)
     for edge in edges:
