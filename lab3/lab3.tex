@@ -1,0 +1,363 @@
+\documentclass[a4paper, 14pt]{extarticle}
+
+% Поля
+%--------------------------------------
+\usepackage{geometry}
+\usepackage[T2A]{fontenc}
+\usepackage[russian]{babel}
+\usepackage{minted}
+\usepackage{float}
+\usepackage{graphicx} 
+\geometry{a4paper,tmargin=2cm,bmargin=2cm,lmargin=3cm,rmargin=1cm}
+%--------------------------------------
+
+
+%Russian-specific packages
+%--------------------------------------
+\usepackage[T2A]{fontenc}
+\usepackage[utf8]{inputenc} 
+\usepackage[english, main=russian]{babel}
+%--------------------------------------
+\usepackage{textcomp}
+
+% Красная строка
+%--------------------------------------
+\usepackage{indentfirst}               
+%--------------------------------------             
+
+
+%Graphics
+%--------------------------------------
+\usepackage{graphicx}
+\graphicspath{ {./images/} }
+\usepackage{wrapfig}
+%--------------------------------------
+
+% Полуторный интервал
+%--------------------------------------
+\linespread{1.3}                    
+%--------------------------------------
+
+%Выравнивание и переносы
+%--------------------------------------
+% Избавляемся от переполнений
+\sloppy
+% Запрещаем разрыв страницы после первой строки абзаца
+\clubpenalty=10000
+% Запрещаем разрыв страницы после последней строки абзаца
+\widowpenalty=10000
+%--------------------------------------
+
+%Списки
+\usepackage{enumitem}
+
+%Подписи
+\usepackage{caption} 
+
+%Гиперссылки
+\usepackage{hyperref}
+
+\hypersetup {
+	unicode=true
+}
+
+%Рисунки
+%--------------------------------------
+\DeclareCaptionLabelSeparator*{emdash}{~--- }
+\captionsetup[figure]{labelsep=emdash,font=onehalfspacing,position=bottom}
+%--------------------------------------
+
+\usepackage{tempora}
+\usepackage{amsmath}
+\usepackage{color}
+\usepackage{listings}
+\lstset{
+  belowcaptionskip=1\baselineskip,
+  breaklines=true,
+  frame=L,
+  xleftmargin=\parindent,
+  language=Python,
+  showstringspaces=false,
+  basicstyle=\footnotesize\ttfamily,
+  keywordstyle=\bfseries\color{blue},
+  commentstyle=\itshape\color{purple},
+  identifierstyle=\color{black},
+  stringstyle=\color{red},
+}
+
+%--------------------------------------
+%			НАЧАЛО ДОКУМЕНТА
+%--------------------------------------
+
+\begin{document}
+
+%--------------------------------------
+%			ТИТУЛЬНЫЙ ЛИСТ
+%--------------------------------------
+\begin{titlepage}
+\thispagestyle{empty}
+\newpage
+
+
+%Шапка титульного листа
+%--------------------------------------
+\vspace*{-60pt}
+\hspace{-65pt}
+\begin{minipage}{0.3\textwidth}
+\hspace*{-20pt}\centering
+\includegraphics[width=\textwidth]{emblem}
+\end{minipage}
+\begin{minipage}{0.67\textwidth}\small \textbf{
+\vspace*{-0.7ex}
+\hspace*{-6pt}\centerline{Министерство науки и высшего образования Российской Федерации}
+\vspace*{-0.7ex}
+\centerline{Федеральное государственное бюджетное образовательное учреждение }
+\vspace*{-0.7ex}
+\centerline{высшего образования}
+\vspace*{-0.7ex}
+\centerline{<<Московский государственный технический университет}
+\vspace*{-0.7ex}
+\centerline{имени Н.Э. Баумана}
+\vspace*{-0.7ex}
+\centerline{(национальный исследовательский университет)>>}
+\vspace*{-0.7ex}
+\centerline{(МГТУ им. Н.Э. Баумана)}}
+\end{minipage}
+%--------------------------------------
+
+%Полосы
+%--------------------------------------
+\vspace{-25pt}
+\hspace{-35pt}\rule{\textwidth}{2.3pt}
+
+\vspace*{-20.3pt}
+\hspace{-35pt}\rule{\textwidth}{0.4pt}
+%--------------------------------------
+
+\vspace{1.5ex}
+\hspace{-35pt} \noindent \small ФАКУЛЬТЕТ\hspace{80pt} <<Информатика и системы управления>>
+
+\vspace*{-16pt}
+\hspace{47pt}\rule{0.83\textwidth}{0.4pt}
+
+\vspace{0.5ex}
+\hspace{-35pt} \noindent \small КАФЕДРА\hspace{50pt} <<Теоретическая информатика и компьютерные технологии>>
+
+\vspace*{-16pt}
+\hspace{30pt}\rule{0.866\textwidth}{0.4pt}
+  
+\vspace{11em}
+
+\begin{center}
+\Large {\bf Лабораторная работа № 3} \\
+\large {\bf по курсу <<Компьютерная графика>>} \\
+\large <<Модельно-видовые и проективные пеобразования>>
+\end{center}\normalsize
+
+\vspace{8em}
+
+
+\begin{flushright}
+  {Студент группы ИУ9-42Б Волохов А. В.\hspace*{15pt} \\
+  \vspace{2ex}
+  Преподаватель Цалкович П. А.\hspace*{15pt}}
+\end{flushright}
+
+\bigskip
+
+\vfill
+
+
+\begin{center}
+\textsl{Москва 2024}
+\end{center}
+\end{titlepage}
+%--------------------------------------
+%		КОНЕЦ ТИТУЛЬНОГО ЛИСТА
+%--------------------------------------
+
+\renewcommand{\ttdefault}{pcr}
+
+\setlength{\tabcolsep}{3pt}
+\newpage
+\setcounter{page}{2}
+
+\section{Задача}\label{Sect::task}
+\par
+Для выполнения лабораторной нужно будет взять код, который вы получили после лабораторной 2, отключить проективные преобразования и заменить куб на фигуру указанную в варианте.
+\par
+Вариант: круговой тор
+
+\section{Основная теория}
+
+\par
+В данном коде реализован пример трехмерной графики с использованием библиотеки OpenGL и библиотеки GLFW для создания окна. Программа отображает тороидальную поверхность (тор) в пространстве.
+\par
+Подход к инициализации окна и контекста OpenGL аналогичен предыдущему коду. Окно создается с использованием GLFW, а затем устанавливается текущий контекст OpenGL.
+\par
+Функция display() отвечает за отрисовку сцены. Вначале происходит очистка буферов цвета и глубины. Затем устанавливается матрица проекции с помощью функции projection(). В данном случае происходит вращение сцены вокруг оси X и Y. После этого вызывается функция torus(), которая отрисовывает тор, используя примитивы OpenGL.
+\par
+Функции key callback() и scroll callback() отвечают за обработку нажатий клавиш и колеса мыши соответственно. При нажатии клавиш стрелок происходит изменение углов поворота сцены. При прокрутке колеса мыши изменяется размер тора.
+
+\pagebreak
+\section{Практическая реализация}
+Код представлен в Листинге 1.
+\par
+\begin{center}
+    Листинг 1 - lab3.py
+\end{center}
+
+\begin{lstlisting}
+import math
+
+import glfw
+import numpy as np
+from OpenGL.GL import *
+from math import cos, sin
+
+alpha = 0
+beta = 0
+size = 0.5
+fill = True
+
+
+def main():
+    if not glfw.init():
+        return
+    window = glfw.create_window(640, 640, "LAB 3", None, None)
+    if not window:
+        glfw.terminate()
+        return
+    glfw.make_context_current(window)
+    glfw.set_key_callback(window, key_callback)
+    glfw.set_scroll_callback(window, scroll_callback)
+
+    glEnable(GL_DEPTH_TEST)
+    glDepthFunc(GL_LESS)
+    while not glfw.window_should_close(window):
+        display(window)
+    glfw.destroy_window(window)
+    glfw.terminate()
+
+
+def display(window):
+    glLoadIdentity()
+    glClear(GL_COLOR_BUFFER_BIT)
+    glClear(GL_DEPTH_BUFFER_BIT)
+    glMatrixMode(GL_PROJECTION)
+    global alpha
+    global beta
+
+    def projection():
+        alpha_rad = np.radians(alpha)
+        beta_rad = np.radians(beta)
+
+        rotate_y = np.array([
+            [cos(alpha_rad), 0, sin(alpha_rad), 0],
+            [0, 1, 0, 0],
+            [-sin(alpha_rad), 0, cos(alpha_rad), 0],
+            [0, 0, 0, 1]
+        ])
+
+        rotate_x = np.array([
+            [1, 0, 0, 0],
+            [0, cos(beta_rad), -sin(beta_rad), 0],
+            [0, sin(beta_rad), cos(beta_rad), 0],
+            [0, 0, 0, 1]
+        ])
+
+        glMultMatrixf(rotate_x)
+        glMultMatrixf(rotate_y)
+
+    def torus(R, r, N, n):
+        for i in range(N):
+            for j in range(n):
+                theta = (2 * math.pi / N) * i
+                phi = (2 * math.pi / n) * j
+                theta_next = (2 * math.pi / N) * (i + 1)
+                phi_next = (2 * math.pi / n) * (j + 1)
+
+                # Рисуем "квадраты"
+
+                x0 = (R + r * cos(phi)) * cos(theta)
+                y0 = (R + r * cos(phi)) * sin(theta)
+                z0 = r * sin(phi)
+
+                x1 = (R + r * cos(phi)) * cos(theta_next)
+                y1 = (R + r * cos(phi)) * sin(theta_next)
+                z1 = r * sin(phi)
+
+                x2 = (R + r * cos(phi_next)) * cos(theta_next)
+                y2 = (R + r * cos(phi_next)) * sin(theta_next)
+                z2 = r * sin(phi_next)
+
+                x3 = (R + r * cos(phi_next)) * cos(theta)
+                y3 = (R + r * cos(phi_next)) * sin(theta)
+                z3 = r * sin(phi_next)
+
+                glBegin(GL_QUADS)
+                glVertex3f(x0, y0, z0)
+                glVertex3f(x1, y1, z1)
+                glVertex3f(x2, y2, z2)
+                glVertex3f(x3, y3, z3)
+                glEnd()
+
+    glLoadIdentity()
+
+    projection()
+    R = size
+    r = size / 3
+
+    glColor3f(1.0, 0.0, 0.0)
+
+    torus(R, r, 40, 25)
+
+    glfw.swap_buffers(window)
+    glfw.poll_events()
+
+
+def key_callback(window, key, scancode, action, mods):
+    global alpha
+    global beta
+    if action == glfw.PRESS or action == glfw.REPEAT:
+        if key == glfw.KEY_RIGHT:
+            alpha += 3
+        elif key == glfw.KEY_LEFT:
+            alpha -= 3
+        elif key == glfw.KEY_UP:
+            beta -= 3
+        elif key == glfw.KEY_DOWN:
+            beta += 3
+        elif key == glfw.KEY_F:
+            global fill
+            fill = not fill
+            if fill:
+                glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
+            else:
+                glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
+
+
+def scroll_callback(window, xoffset, yoffset):
+    global size
+
+    if xoffset > 0:
+        size -= yoffset / 10
+    else:
+        size += yoffset / 10
+
+
+if __name__ == "__main__":
+    main()
+
+\end{lstlisting}
+В результате работы программы получилcя следующий вывод:
+\begin{center}
+    \includegraphics[width=\linewidth]{res1.png}
+    \newpage
+    \includegraphics[width=\linewidth]{res2.png}
+\end{center}
+\pagebreak
+
+\section{Заключение}
+В результате выполнения лабораторной работы был создан пример трехмерной графики с помощью библиотеки OpenGL. Реализована отрисовка тороидальной поверхности, а также добавлена возможность вращения и изменения размера объекта с помощью клавиш и колеса мыши. Этот пример демонстрирует основные принципы работы с трехмерной графикой в контексте OpenGL и может быть использован в дальнейшем для изучения более сложных трехмерных моделей и алгоритмов отображения.
+\end{document}
