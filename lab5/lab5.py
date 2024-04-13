@@ -171,6 +171,7 @@ def clip_edges():
     max_x_rect = 250
     min_y_rect = 150
     max_y_rect = 250
+    edges.append([edges[0][0], edges[-1][1]])
     for edge in edges:
         p1, p2 = edge
         clipped = clip_line(min_x_rect, max_x_rect, min_y_rect, max_y_rect, p1, p2)
