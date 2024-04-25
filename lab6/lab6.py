@@ -5,13 +5,15 @@ import numpy as np
 from OpenGL.GL import *
 from math import cos, sin
 
-from OpenGL.raw.GLUT import glutSolidSphere
 from PIL import Image
 
 alpha = 0
 beta = 0
 size = 0.5
 fill = True
+
+torus_position = [0.0, 0.0, 0.0]
+torus_velocity = [0.01, 0.02, 0.05]  # Начальная скорость
 
 
 def main():
@@ -71,12 +73,16 @@ def load_texture(filename):
 
 
 def display(window, texture_id):
+    global alpha
+    global beta
+    global size
+    global torus_position
+    global torus_velocity
+
     glLoadIdentity()
     glClear(GL_COLOR_BUFFER_BIT)
     glClear(GL_DEPTH_BUFFER_BIT)
     glMatrixMode(GL_PROJECTION)
-    global alpha
-    global beta
 
     def projection():
         alpha_rad = np.radians(alpha)
@@ -100,8 +106,9 @@ def display(window, texture_id):
         glMultMatrixf(rotate_y)
 
     def torus(R, r, N, n):
-        glBindTexture(GL_TEXTURE_2D, texture_id)  # Связываем текстуру с текущим текстурным объектом
         glEnable(GL_TEXTURE_2D)
+        glBindTexture(GL_TEXTURE_2D, texture_id)
+
         for i in range(N):
             for j in range(n):
                 theta = (2 * math.pi / N) * i
@@ -149,8 +156,17 @@ def display(window, texture_id):
     R = size
     r = size / 3
 
-    # glColor3f(1.0, 0.0, 0.0)
+    # Обновление позиции Тора на каждом кадре
+    for i in range(3):
+        torus_position[i] += torus_velocity[i]
 
+    # Проверка столкновения Тора с границами окна и отражение его скорости при необходимости
+    for i in range(3):
+        if torus_position[i] + size > 1.0 or torus_position[i] - size < -1.0:
+            torus_velocity[i] *= -1.0
+
+    # Рисование Тора
+    glTranslatef(torus_position[0], torus_position[1], torus_position[2])
     torus(R, r, 40, 25)
 
     glfw.swap_buffers(window)
