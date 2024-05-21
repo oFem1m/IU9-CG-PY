@@ -14,7 +14,7 @@ size = 0.5
 fill = True
 
 torus_position = [0.0, 0.0, 0.0]
-torus_velocity = [0.00001, 0.00002, 0.00005]  # Начальная скорость
+torus_velocity = [0.00001, 0.00002, 0.00005]
 
 last_frame_time = 0.0
 frame_count = 0
@@ -23,6 +23,7 @@ fps = 0.0
 torus_display_list = None
 vbo = None
 
+
 def create_torus_display_list():
     global torus_display_list
 
@@ -30,7 +31,6 @@ def create_torus_display_list():
     torus_display_list = glGenLists(1)
     glNewList(torus_display_list, GL_COMPILE)
 
-    # Рисование тора (без использования функции glBegin/glEnd)
     R = size
     r = size / 3
     N = 40
@@ -53,7 +53,9 @@ def create_torus_display_list():
 
     glEndList()
 
+
 vertices = []
+
 
 def create_vbo():
     global vbo
@@ -82,6 +84,7 @@ def create_vbo():
     glBindBuffer(GL_ARRAY_BUFFER, vbo)
     glBufferData(GL_ARRAY_BUFFER, np.array(vertices, dtype=np.float32), GL_STATIC_DRAW)
 
+
 def draw_torus_with_vbo():
     global vertices
 
@@ -90,6 +93,7 @@ def draw_torus_with_vbo():
     glVertexPointer(3, GL_FLOAT, 0, None)
     glDrawArrays(GL_QUAD_STRIP, 0, int(len(vertices) / 3))
     glDisableClientState(GL_VERTEX_ARRAY)
+
 
 def main():
     global last_frame_time, frame_count, fps
@@ -123,11 +127,12 @@ def main():
     glfw.destroy_window(window)
     glfw.terminate()
 
+
 def setup_lighting():
     glEnable(GL_LIGHTING)
     glEnable(GL_LIGHT0)
 
-    # Установка позиции источника света
+    # Установка позиции источника света - оптимизация
     light_pos = [10.0, 10.0, 10.0, 1.0]  # Позиция в пространстве (x, y, z, w)
     glLightfv(GL_LIGHT0, GL_POSITION, light_pos)
 
@@ -145,6 +150,7 @@ def setup_lighting():
     material_shininess = [100.0]  # Коэффициент блеска материала
     glMaterialfv(GL_FRONT, GL_SHININESS, material_shininess)
 
+
 def load_texture(filename):
     img = Image.open(filename)
     img_data = np.array(list(img.getdata()), np.uint8)
@@ -152,7 +158,7 @@ def load_texture(filename):
     glBindTexture(GL_TEXTURE_2D, texture_id)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, img.width, img.height, 0, GL_RGB, GL_UNSIGNED_BYTE, img_data)
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, img.width, img.height, 0, GL_RGB, GL_UNSIGNED_BYTE, img_data) # Использование UNSIGNED_BYTE - оптиимизация
     return texture_id
 
 
