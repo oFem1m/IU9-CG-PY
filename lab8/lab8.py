@@ -1,13 +1,35 @@
-import glfw
-from OpenGL.GL import *
-import numpy as np
-from Shader import Shader  # Предполагается, что у вас есть класс Shader для работы с шейдерами
 import math
+import glfw
+import numpy as np
+from OpenGL.GL import *
+from OpenGL.GL.shaders import compileProgram, compileShader
+from math import cos, sin
 
 alpha = 0
 beta = 0
 size = 0.5
 fill = True
+
+vertex_shader = """
+#version 330 core
+layout(location = 0) in vec3 position;
+uniform mat4 model;
+uniform mat4 view;
+uniform mat4 projection;
+void main()
+{
+    gl_Position = projection * view * model * vec4(position, 1.0);
+}
+"""
+
+fragment_shader = """
+#version 330 core
+out vec4 FragColor;
+void main()
+{
+    FragColor = vec4(1.0, 0.0, 0.0, 1.0);  // Red color
+}
+"""
 
 
 def main():
@@ -24,40 +46,70 @@ def main():
     glEnable(GL_DEPTH_TEST)
     glDepthFunc(GL_LESS)
 
-    shader = Shader("vertex_shader.glsl", "fragment_shader.glsl")  # Загрузка и компиляция шейдеров
+    shader = create_shader_program()
 
     while not glfw.window_should_close(window):
         display(window, shader)
+
     glfw.destroy_window(window)
     glfw.terminate()
 
 
+def create_shader_program():
+    shader = compileProgram(
+        compileShader(vertex_shader, GL_VERTEX_SHADER),
+        compileShader(fragment_shader, GL_FRAGMENT_SHADER)
+    )
+    return shader
+
+
 def display(window, shader):
-    glClear(GL_COLOR_BUFFER_BIT)
-    glClear(GL_DEPTH_BUFFER_BIT)
+    glLoadIdentity()
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
-    projection = np.identity(4)
-    view = np.identity(4)
-    model = np.identity(4)
+    glUseProgram(shader)
 
-    projection_loc = glGetUniformLocation(shader.program_id, "projection")
-    view_loc = glGetUniformLocation(shader.program_id, "view")
-    model_loc = glGetUniformLocation(shader.program_id, "model")
+    model = np.identity(4, dtype=np.float32)
+    view = np.identity(4, dtype=np.float32)
+    projection = np.identity(4, dtype=np.float32)
 
-    glUniformMatrix4fv(projection_loc, 1, GL_FALSE, projection)
-    glUniformMatrix4fv(view_loc, 1, GL_FALSE, view)
-    glUniformMatrix4fv(model_loc, 1, GL_FALSE, model)
+    alpha_rad = np.radians(alpha)
+    beta_rad = np.radians(beta)
+
+    rotate_y = np.array([
+        [cos(alpha_rad), 0, sin(alpha_rad), 0],
+        [0, 1, 0, 0],
+        [-sin(alpha_rad), 0, cos(alpha_rad), 0],
+        [0, 0, 0, 1]
+    ], dtype=np.float32)
+
+    rotate_x = np.array([
+        [1, 0, 0, 0],
+        [0, cos(beta_rad), -sin(beta_rad), 0],
+        [0, sin(beta_rad), cos(beta_rad), 0],
+        [0, 0, 0, 1]
+    ], dtype=np.float32)
+
+    model = rotate_x @ rotate_y
+
+    projection_location = glGetUniformLocation(shader, "projection")
+    view_location = glGetUniformLocation(shader, "view")
+    model_location = glGetUniformLocation(shader, "model")
+
+    glUniformMatrix4fv(projection_location, 1, GL_FALSE, projection)
+    glUniformMatrix4fv(view_location, 1, GL_FALSE, view)
+    glUniformMatrix4fv(model_location, 1, GL_FALSE, model)
 
     R = size
     r = size / 3
 
-    torus(shader, R, r, 40, 25)
+    torus(R, r, 40, 25)
 
     glfw.swap_buffers(window)
     glfw.poll_events()
 
 
-def torus(shader, R, r, N, n):
+def torus(R, r, N, n):
     for i in range(N):
         for j in range(n):
             theta = (2 * math.pi / N) * i
@@ -65,37 +117,28 @@ def torus(shader, R, r, N, n):
             theta_next = (2 * math.pi / N) * (i + 1)
             phi_next = (2 * math.pi / n) * (j + 1)
 
-            x0 = (R + r * math.cos(phi)) * math.cos(theta)
-            y0 = (R + r * math.cos(phi)) * math.sin(theta)
-            z0 = r * math.sin(phi)
+            x0 = (R + r * cos(phi)) * cos(theta)
+            y0 = (R + r * cos(phi)) * sin(theta)
+            z0 = r * sin(phi)
 
-            x1 = (R + r * math.cos(phi)) * math.cos(theta_next)
-            y1 = (R + r * math.cos(phi)) * math.sin(theta_next)
-            z1 = r * math.sin(phi)
+            x1 = (R + r * cos(phi)) * cos(theta_next)
+            y1 = (R + r * cos(phi)) * sin(theta_next)
+            z1 = r * sin(phi)
 
-            x2 = (R + r * math.cos(phi_next)) * math.cos(theta_next)
-            y2 = (R + r * math.cos(phi_next)) * math.sin(theta_next)
-            z2 = r * math.sin(phi_next)
+            x2 = (R + r * cos(phi_next)) * cos(theta_next)
+            y2 = (R + r * cos(phi_next)) * sin(theta_next)
+            z2 = r * sin(phi_next)
 
-            x3 = (R + r * math.cos(phi_next)) * math.cos(theta)
-            y3 = (R + r * math.cos(phi_next)) * math.sin(theta)
-            z3 = r * math.sin(phi_next)
+            x3 = (R + r * cos(phi_next)) * cos(theta)
+            y3 = (R + r * cos(phi_next)) * sin(theta)
+            z3 = r * sin(phi_next)
 
-            vertices = np.array([
-                [x0, y0, z0],
-                [x1, y1, z1],
-                [x2, y2, z2],
-                [x3, y3, z3]
-            ], dtype=np.float32)
-
-            glBindVertexArray(shader.VAO)
-            glBindBuffer(GL_ARRAY_BUFFER, shader.VBO)
-            glBufferData(GL_ARRAY_BUFFER, vertices.nbytes, vertices, GL_STATIC_DRAW)
-
-            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), ctypes.c_void_p(0))
-            glEnableVertexAttribArray(0)
-
-            glDrawArrays(GL_QUADS, 0, 4)
+            glBegin(GL_QUADS)
+            glVertex3f(x0, y0, z0)
+            glVertex3f(x1, y1, z1)
+            glVertex3f(x2, y2, z2)
+            glVertex3f(x3, y3, z3)
+            glEnd()
 
 
 def key_callback(window, key, scancode, action, mods):
@@ -121,7 +164,6 @@ def key_callback(window, key, scancode, action, mods):
 
 def scroll_callback(window, xoffset, yoffset):
     global size
-
     if xoffset > 0:
         size -= yoffset / 10
     else:
