@@ -13,7 +13,7 @@ size = 0.5
 fill = True
 
 torus_position = [0.0, 0.0, 0.0]
-torus_velocity = [0.01, 0.02, 0.05]  # Начальная скорость
+torus_velocity = [0.001, 0.002, 0.005]  # Начальная скорость
 
 
 def main():
