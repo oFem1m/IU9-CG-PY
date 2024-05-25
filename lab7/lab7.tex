@@ -1,0 +1,506 @@
+\documentclass[a4paper, 14pt]{extarticle}
+
+% Поля
+%--------------------------------------
+\usepackage{geometry}
+\usepackage[T2A]{fontenc}
+\usepackage[russian]{babel}
+\usepackage{minted}
+\usepackage{float}
+\usepackage{graphicx} 
+\geometry{a4paper,tmargin=2cm,bmargin=2cm,lmargin=3cm,rmargin=1cm}
+%--------------------------------------
+
+
+%Russian-specific packages
+%--------------------------------------
+\usepackage[T2A]{fontenc}
+\usepackage[utf8]{inputenc} 
+\usepackage[english, main=russian]{babel}
+%--------------------------------------
+\usepackage{textcomp}
+
+% Красная строка
+%--------------------------------------
+\usepackage{indentfirst}               
+%--------------------------------------             
+
+
+%Graphics
+%--------------------------------------
+\usepackage{graphicx}
+\graphicspath{ {./images/} }
+\usepackage{wrapfig}
+%--------------------------------------
+
+% Полуторный интервал
+%--------------------------------------
+\linespread{1.3}                    
+%--------------------------------------
+
+%Выравнивание и переносы
+%--------------------------------------
+% Избавляемся от переполнений
+\sloppy
+% Запрещаем разрыв страницы после первой строки абзаца
+\clubpenalty=10000
+% Запрещаем разрыв страницы после последней строки абзаца
+\widowpenalty=10000
+%--------------------------------------
+
+%Списки
+\usepackage{enumitem}
+
+%Подписи
+\usepackage{caption} 
+
+%Гиперссылки
+\usepackage{hyperref}
+
+\hypersetup {
+	unicode=true
+}
+
+%Рисунки
+%--------------------------------------
+\DeclareCaptionLabelSeparator*{emdash}{~--- }
+\captionsetup[figure]{labelsep=emdash,font=onehalfspacing,position=bottom}
+%--------------------------------------
+
+\usepackage{tempora}
+\usepackage{amsmath}
+\usepackage{color}
+\usepackage{listings}
+\lstset{
+  belowcaptionskip=1\baselineskip,
+  breaklines=true,
+  frame=L,
+  xleftmargin=\parindent,
+  language=Python,
+  showstringspaces=false,
+  basicstyle=\footnotesize\ttfamily,
+  keywordstyle=\bfseries\color{blue},
+  commentstyle=\itshape\color{purple},
+  identifierstyle=\color{black},
+  stringstyle=\color{red},
+}
+
+%--------------------------------------
+%			НАЧАЛО ДОКУМЕНТА
+%--------------------------------------
+
+\begin{document}
+
+%--------------------------------------
+%			ТИТУЛЬНЫЙ ЛИСТ
+%--------------------------------------
+\begin{titlepage}
+\thispagestyle{empty}
+\newpage
+
+
+%Шапка титульного листа
+%--------------------------------------
+\vspace*{-60pt}
+\hspace{-65pt}
+\begin{minipage}{0.3\textwidth}
+\hspace*{-20pt}\centering
+\includegraphics[width=\textwidth]{emblem}
+\end{minipage}
+\begin{minipage}{0.67\textwidth}\small \textbf{
+\vspace*{-0.7ex}
+\hspace*{-6pt}\centerline{Министерство науки и высшего образования Российской Федерации}
+\vspace*{-0.7ex}
+\centerline{Федеральное государственное бюджетное образовательное учреждение }
+\vspace*{-0.7ex}
+\centerline{высшего образования}
+\vspace*{-0.7ex}
+\centerline{<<Московский государственный технический университет}
+\vspace*{-0.7ex}
+\centerline{имени Н.Э. Баумана}
+\vspace*{-0.7ex}
+\centerline{(национальный исследовательский университет)>>}
+\vspace*{-0.7ex}
+\centerline{(МГТУ им. Н.Э. Баумана)}}
+\end{minipage}
+%--------------------------------------
+
+%Полосы
+%--------------------------------------
+\vspace{-25pt}
+\hspace{-35pt}\rule{\textwidth}{2.3pt}
+
+\vspace*{-20.3pt}
+\hspace{-35pt}\rule{\textwidth}{0.4pt}
+%--------------------------------------
+
+\vspace{1.5ex}
+\hspace{-35pt} \noindent \small ФАКУЛЬТЕТ\hspace{80pt} <<Информатика и системы управления>>
+
+\vspace*{-16pt}
+\hspace{47pt}\rule{0.83\textwidth}{0.4pt}
+
+\vspace{0.5ex}
+\hspace{-35pt} \noindent \small КАФЕДРА\hspace{50pt} <<Теоретическая информатика и компьютерные технологии>>
+
+\vspace*{-16pt}
+\hspace{30pt}\rule{0.866\textwidth}{0.4pt}
+  
+\vspace{11em}
+
+\begin{center}
+\Large {\bf Лабораторная работа № 7} \\
+\large {\bf по курсу <<Компьютерная графика>>} \\
+\large <<Оптимизация приложений OpenGL>>
+\end{center}\normalsize
+
+\vspace{8em}
+
+
+\begin{flushright}
+  {Студент группы ИУ9-42Б Волохов А. В.\hspace*{15pt} \\
+  \vspace{2ex}
+  Преподаватель Цалкович П. А.\hspace*{15pt}}
+\end{flushright}
+
+\bigskip
+
+\vfill
+
+
+\begin{center}
+\textsl{Москва 2024}
+\end{center}
+\end{titlepage}
+%--------------------------------------
+%		КОНЕЦ ТИТУЛЬНОГО ЛИСТА
+%--------------------------------------
+
+\renewcommand{\ttdefault}{pcr}
+
+\setlength{\tabcolsep}{3pt}
+\newpage
+\setcounter{page}{2}
+
+\section{Условие}\label{Sect::task}
+Целью данной лабораторной работы является изучение эффективных приемов организации приложений и оптимизации вызовов OpenGL.
+\par
+Задача заключается в оптимизации приложения OpenGL, созданного в рамках предыдущей лабораторной работы, на основе выбора наиболее эффективных методик с целью повышения FPS.
+\par
+Необходимо обязательно использовать дисплейные списки и массивы вершин, а также еще две любые различные оптимизации (в сумме минимум 4 оптимизации).
+\parОценка применимости выбранного метода оптимизации должна осуществляться на основании измерения производительности. Результаты замеров следует оформить в табличном виде.
+
+\section{Основная теория}
+\par
+\textbf{OpenGL и его оптимизация:} OpenGL (Open Graphics Library) - это спецификация, определяющая кросс-платформенный API для рендеринга 2D и 3D графики. Она предоставляет разработчикам мощные инструменты для создания графических приложений, таких как игры, симуляции и научные визуализации. Однако для достижения высокой производительности требуется эффективная организация и оптимизация вызовов OpenGL. Существует множество методик, позволяющих улучшить производительность графических приложений.
+\par
+\textbf{Дисплейные списки:} Дисплейные списки являются одним из наиболее простых и эффективных методов оптимизации. Они позволяют заранее компилировать и сохранять последовательности команд OpenGL, которые затем можно многократно выполнять с помощью одного вызова. Это существенно снижает нагрузку на процессор и ускоряет рендеринг, особенно для сложных геометрических объектов, которые необходимо часто отрисовывать.
+\par
+\textbf{Массивы вершин и буферы вершин:} Использование массивов вершин и буферов вершин (Vertex Buffer Objects, VBOs) позволяет хранить геометрические данные в видеопамяти, что значительно уменьшает накладные расходы на передачу данных между центральным процессором и графическим процессором. Это особенно полезно для рендеринга сложных сцен с большим количеством вершин и примитивов. Буферы вершин обеспечивают высокую производительность за счет минимизации количества вызовов функций и более эффективного использования аппаратных ресурсов.
+\par
+\textbf{Оптимизация источников света:} Правильная настройка источников света также может значительно повлиять на производительность. Например, установка позиции источника света с использованием координат в форме (x, y, z, 0) позволяет упростить расчеты и повысить эффективность рендеринга. Это особенно важно для сцен с множеством источников света, где каждый дополнительный источник может значительно увеличить вычислительную нагрузку.
+\par
+\textbf{Использование эффективных форматов хранения изображений:} При работе с текстурами выбор правильного формата хранения изображений может существенно повлиять на производительность. Форматы, такие как GL UNSIGNED BYTE, обеспечивают быструю загрузку и обработку текстурных данных, что особенно важно для интерактивных приложений с высокой частотой кадров. Это позволяет ускорить процессы загрузки текстур в видеопамять и их последующее использование при рендеринге.
+\pagebreak
+\section{Практическая реализация}
+Код представлен в Листинге 1.
+\par
+\begin{center}
+    Листинг 1 - lab7.py
+\end{center}
+
+\begin{lstlisting}
+import math
+import time
+
+import glfw
+import numpy as np
+from OpenGL.GL import *
+from math import cos, sin
+
+from PIL import Image
+
+alpha = 0
+beta = 0
+size = 0.5
+fill = True
+
+torus_position = [0.0, 0.0, 0.0]
+torus_velocity = [0.0000000001, 0.0000000002, 0.0000000005]
+
+last_frame_time = 0.0
+frame_count = 0
+fps = 0.0
+
+torus_display_list = None
+vbo = None
+
+
+def create_torus_display_list():
+    global torus_display_list
+
+    torus_display_list = glGenLists(1)
+    glNewList(torus_display_list, GL_COMPILE)
+
+    R = size
+    r = size / 3
+    N = 40
+    n = 25
+
+    for i in range(N):
+        glBegin(GL_QUAD_STRIP)
+        for j in range(n + 1):
+            for k in range(2):
+                s = (i + k) % N + 0.5
+                t = j % (n + 1)
+                theta = 2 * math.pi * s / N
+                phi = 2 * math.pi * t / n
+                x = (R + r * cos(phi)) * cos(theta)
+                y = (R + r * cos(phi)) * sin(theta)
+                z = r * sin(phi)
+                glTexCoord2f(s / N, t / n)
+                glVertex3f(x, y, z)
+        glEnd()
+
+    glEndList()
+
+
+vertices = []
+
+
+def create_vbo():
+    global vbo
+
+    R = size
+    r = size / 3
+    N = 40
+    n = 25
+
+    for i in range(N):
+        for j in range(n + 1):
+            for k in range(2):
+                s = (i + k) % N + 0.5
+                t = j % (n + 1)
+                theta = 2 * math.pi * s / N
+                phi = 2 * math.pi * t / n
+                x = (R + r * cos(phi)) * cos(theta)
+                y = (R + r * cos(phi)) * sin(theta)
+                z = r * sin(phi)
+                vertices.extend([x, y, z])
+
+    vbo = glGenBuffers(1)
+    glBindBuffer(GL_ARRAY_BUFFER, vbo)
+    glBufferData(GL_ARRAY_BUFFER, np.array(vertices, dtype=np.float32), GL_STATIC_DRAW)
+
+
+def draw_torus_with_vbo():
+    global vertices
+
+    glBindBuffer(GL_ARRAY_BUFFER, vbo)
+    glEnableClientState(GL_VERTEX_ARRAY)
+    glVertexPointer(3, GL_FLOAT, 0, None)
+    glDrawArrays(GL_QUAD_STRIP, 0, int(len(vertices) / 3))
+    glDisableClientState(GL_VERTEX_ARRAY)
+
+
+def main():
+    global last_frame_time, frame_count, fps
+    if not glfw.init():
+        return
+    window = glfw.create_window(640, 640, "LAB 7 opt", None, None)
+    if not window:
+        glfw.terminate()
+        return
+    glfw.make_context_current(window)
+    glfw.set_key_callback(window, key_callback)
+    glfw.set_scroll_callback(window, scroll_callback)
+
+    glEnable(GL_DEPTH_TEST)
+    glDepthFunc(GL_LESS)
+
+    setup_lighting()
+    texture_id = load_texture("texture.jpg")
+
+    create_torus_display_list()
+    create_vbo()
+
+    last_frame_time = time.time()
+
+    while not glfw.window_should_close(window):
+        display(window, texture_id)
+
+    glfw.destroy_window(window)
+    glfw.terminate()
+
+
+def setup_lighting():
+    glEnable(GL_LIGHTING)
+    glEnable(GL_LIGHT0)
+
+    light_pos = [10.0, 10.0, 10.0, 0.0]
+    glLightfv(GL_LIGHT0, GL_POSITION, light_pos)
+
+    light_diffuse = [1.0, 1.0, 1.0, 1.0]
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse)
+    light_specular = [1.0, 1.0, 1.0, 1.0]
+    glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular)
+
+    material_diffuse = [0.8, 0.8, 0.8, 1.0]
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, material_diffuse)
+    material_specular = [1.0, 1.0, 1.0, 1.0]
+    glMaterialfv(GL_FRONT, GL_SPECULAR, material_specular)
+    material_shininess = [100.0]
+    glMaterialfv(GL_FRONT, GL_SHININESS, material_shininess)
+
+
+def load_texture(filename):
+    img = Image.open(filename)
+    img_data = np.array(list(img.getdata()), np.uint8)
+    texture_id = glGenTextures(1)
+    glBindTexture(GL_TEXTURE_2D, texture_id)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, img.width, img.height, 0, GL_RGB, GL_UNSIGNED_BYTE, img_data)
+    return texture_id
+
+
+def display(window, texture_id):
+    global alpha
+    global beta
+    global size
+    global torus_position
+    global torus_velocity
+    global frame_count, last_frame_time, fps
+
+    glLoadIdentity()
+    glClear(GL_COLOR_BUFFER_BIT)
+    glClear(GL_DEPTH_BUFFER_BIT)
+    glMatrixMode(GL_PROJECTION)
+
+    def projection():
+        alpha_rad = np.radians(alpha)
+        beta_rad = np.radians(beta)
+
+        rotate_y = np.array([
+            [cos(alpha_rad), 0, sin(alpha_rad), 0],
+            [0, 1, 0, 0],
+            [-sin(alpha_rad), 0, cos(alpha_rad), 0],
+            [0, 0, 0, 1]
+        ])
+
+        rotate_x = np.array([
+            [1, 0, 0, 0],
+            [0, cos(beta_rad), -sin(beta_rad), 0],
+            [0, sin(beta_rad), cos(beta_rad), 0],
+            [0, 0, 0, 1]
+        ])
+
+        glMultMatrixf(rotate_x)
+        glMultMatrixf(rotate_y)
+
+    def torus(R, r, N, n):
+        glEnable(GL_TEXTURE_2D)
+        glBindTexture(GL_TEXTURE_2D, texture_id)
+
+        glCallList(torus_display_list)
+        draw_torus_with_vbo()
+
+        glDisable(GL_TEXTURE_2D)
+
+    glLoadIdentity()
+
+    projection()
+    R = size
+    r = size / 3
+
+    for i in range(3):
+        torus_position[i] += torus_velocity[i]
+
+    for i in range(3):
+        if torus_position[i] + size > 1.0 or torus_position[i] - size < -1.0:
+            torus_velocity[i] *= -1.0
+
+    glTranslatef(torus_position[0], torus_position[1], torus_position[2])
+    torus(R, r, 40, 25)
+
+    current_time = time.time()
+    delta_time = current_time - last_frame_time
+    frame_count += 1
+    if delta_time >= 1.0:
+        fps = frame_count / delta_time
+        print("FPS:", fps)
+        frame_count = 0
+        last_frame_time = current_time
+
+    glfw.swap_buffers(window)
+    glfw.poll_events()
+
+
+def key_callback(window, key, scancode, action, mods):
+    global alpha
+    global beta
+
+    if action == glfw.PRESS or action == glfw.REPEAT:
+        if key == glfw.KEY_RIGHT:
+            alpha += 3
+        elif key == glfw.KEY_LEFT:
+            alpha -= 3
+        elif key == glfw.KEY_UP:
+            beta -= 3
+        elif key == glfw.KEY_DOWN:
+            beta += 3
+        elif key == glfw.KEY_F:
+            global fill
+            fill = not fill
+            if fill:
+                glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
+            else:
+                glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
+        elif key == glfw.KEY_L and action == glfw.PRESS:
+            light_enabled = glIsEnabled(GL_LIGHT0)
+            if light_enabled:
+                glDisable(GL_LIGHT0)
+            else:
+                glEnable(GL_LIGHT0)
+
+
+def scroll_callback(window, xoffset, yoffset):
+    global size
+
+    if xoffset > 0:
+        size -= yoffset / 10
+    else:
+        size += yoffset / 10
+
+
+if __name__ == "__main__":
+    main()
+\end{lstlisting}
+\pagebreak
+В результате работы программы получилcя следующий вывод:
+\begin{center}
+    \includegraphics[width=\linewidth]{res1.png}
+    \newpage
+    \includegraphics[width=\linewidth]{res2.png}
+    \newpage
+\end{center}
+\pagebreak
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|c|c|}
+\hline
+\text{Параметр} & \text{Значение (FPS)} \\
+\hline
+\text{До оптимизации} & 107 \\
+\text{После оптимизации} & 200 \\
+\hline
+\end{tabular}
+\caption{Результаты замеров производительности}
+\label{tab:performance}
+\end{table}
+
+\section{Заключение}
+\par
+Оптимизация графических приложений на основе OpenGL включает в себя использование различных методик, таких как дисплейные списки, массивы вершин, правильная настройка источников света и выбор эффективных форматов хранения изображений. Эти методы позволяют существенно улучшить производительность, как это видно из увеличения частоты кадров с 107 до 200 FPS. Таким образом, применение данных оптимизаций является важным этапом разработки высокопроизводительных графических приложений.
+\end{document}

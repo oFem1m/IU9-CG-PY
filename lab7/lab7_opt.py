@@ -99,7 +99,7 @@ def main():
     global last_frame_time, frame_count, fps
     if not glfw.init():
         return
-    window = glfw.create_window(640, 640, "LAB 6", None, None)
+    window = glfw.create_window(640, 640, "LAB 7 opt", None, None)
     if not window:
         glfw.terminate()
         return

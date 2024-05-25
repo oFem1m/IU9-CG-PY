@@ -24,7 +24,7 @@ def main():
     global last_frame_time
     if not glfw.init():
         return
-    window = glfw.create_window(640, 640, "LAB 6", None, None)
+    window = glfw.create_window(640, 640, "LAB 7 old", None, None)
     if not window:
         glfw.terminate()
         return
@@ -36,7 +36,7 @@ def main():
     glDepthFunc(GL_LESS)
 
     setup_lighting()
-    texture_id = load_texture("texture2.jpg")
+    texture_id = load_texture("texture.jpg")
 
     while not glfw.window_should_close(window):
         display(window, texture_id)
