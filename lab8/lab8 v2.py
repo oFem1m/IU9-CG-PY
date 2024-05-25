@@ -19,7 +19,7 @@ torus_velocity = [0.001, 0.002, 0.005]  # Начальная скорость
 def main():
     if not glfw.init():
         return
-    window = glfw.create_window(640, 640, "LAB 6", None, None)
+    window = glfw.create_window(640, 640, "LAB 8", None, None)
     if not window:
         glfw.terminate()
         return
