@@ -14,7 +14,7 @@ size = 0.5
 fill = True
 
 torus_position = [0.0, 0.0, 0.0]
-torus_velocity = [0.00001, 0.00002, 0.00005]
+torus_velocity = [0.0000000001, 0.0000000002, 0.0000000005]
 
 last_frame_time = 0.0
 frame_count = 0
@@ -111,7 +111,7 @@ def main():
     glDepthFunc(GL_LESS)
 
     setup_lighting()
-    texture_id = load_texture("texture2.jpg")
+    texture_id = load_texture("texture.jpg")
 
     # Создание дисплейного списка для тора
     create_torus_display_list()

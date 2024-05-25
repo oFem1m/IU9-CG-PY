@@ -31,32 +31,44 @@ def main():
     glDepthFunc(GL_LESS)
 
     setup_lighting()
-    texture_id = load_texture("texture2.jpg")
+    texture_id = load_texture("texture.jpg")
 
     vertex_shader_source = """
-    #version 330 core
-    layout(location = 0) in vec3 aPos;
-    layout(location = 1) in vec2 aTexCoord;
-    out vec2 TexCoord;
-    uniform mat4 model;
-    uniform mat4 view;
-    uniform mat4 projection;
-    void main()
-    {
-        gl_Position = projection * view * model * vec4(aPos, 1.0);
-        TexCoord = aTexCoord;
-    }
+        attribute vec3 aVert;
+        varying vec3 n;
+        varying vec3 v;
+        varying vec2 uv;
+        void main()
+        {   
+            uv = gl_MultiTexCoord0.xy;
+            v = vec3(gl_ModelViewMatrix * vec4(aVert, 1.0));
+            n = normalize(gl_NormalMatrix * gl_Normal);
+            gl_TexCoord[0] = gl_TextureMatrix[0] * gl_MultiTexCoord0;
+            gl_Position = gl_ModelViewProjectionMatrix * vec4(aVert, 1.0);
+        }
     """
 
     fragment_shader_source = """
-    #version 330 core
-    out vec4 FragColor;
-    in vec2 TexCoord;
-    uniform sampler2D texture1;
-    void main()
-    {
-        FragColor = texture(texture1, TexCoord);
-    }
+        varying vec3 n;
+        varying vec3 v; 
+        uniform sampler2D tex;
+        void main ()  
+        {  
+            vec3 L = normalize(gl_LightSource[0].position.xyz - v);   
+            vec3 E = normalize(-v);
+            vec3 R = normalize(-reflect(L,n));  
+
+            vec4 Iamb = gl_FrontLightProduct[0].ambient;    
+            vec4 Idiff = gl_FrontLightProduct[0].diffuse * max(dot(n,L), 0.0);
+            Idiff = clamp(Idiff, 0.0, 1.0);     
+
+            vec4 Ispec = gl_LightSource[0].specular 
+                        * pow(max(dot(R,E),0.0),0.7);
+            Ispec = clamp(Ispec, 0.0, 1.0); 
+
+            vec4 texColor = texture2D(tex, gl_TexCoord[0].st);
+            gl_FragColor = (Idiff + Iamb + Ispec) * texColor;
+        }
     """
 
     shader_program = create_shader_program(vertex_shader_source, fragment_shader_source)

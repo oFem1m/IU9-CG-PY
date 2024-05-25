@@ -13,7 +13,7 @@ size = 0.5
 fill = True
 
 torus_position = [0.0, 0.0, 0.0]
-torus_velocity = [0.001, 0.002, 0.005]  # Начальная скорость
+torus_velocity = [0.0001, 0.0002, 0.0005]  # Начальная скорость
 
 
 def main():
@@ -31,7 +31,7 @@ def main():
     glDepthFunc(GL_LESS)
 
     setup_lighting()
-    texture_id = load_texture("texture2.jpg")
+    texture_id = load_texture("texture.jpg")
 
     while not glfw.window_should_close(window):
         display(window, texture_id)
